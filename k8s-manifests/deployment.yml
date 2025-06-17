@@ -1,0 +1,38 @@
+---
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+    name: payment-ms-deployment
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: payment-ms
+    template:
+        metadata:
+            labels:
+                app: payment-ms
+        spec:
+            containers:
+            - name: payment-ms-container
+              image: aafrozbanu/payment-ms:latest
+              ports:
+              - containerPort: 8083
+              env:
+                - name: DB_NAME
+                  value: paymentdb
+                - name: DB_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                        name: db-config
+                        key: host
+                - name: SPRING_DATASOURCE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                        name: db-secret
+                        key: username
+                - name: SPRING_DATASOURCE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                        name: db-secret
+                        key: password

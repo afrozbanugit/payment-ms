@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -14,7 +17,8 @@ import com.payment.ms.dto.PaymentEvent;
 import com.payment.ms.entity.Payment;
 import com.payment.ms.entity.PaymentRepository;
 
-@Controller
+@RestController
+@RequestMapping("/api")
 public class PaymentController {
 
 	@Autowired
@@ -25,6 +29,11 @@ public class PaymentController {
 
 	@Autowired
 	private KafkaTemplate<String, OrderEvent> kafkaOrderTemplate;
+
+	@GetMapping("/health")
+	public String healthStatus(){
+		return "Payment MS health - Fine";
+	}
 
 	@KafkaListener(topics = "new-orders", groupId = "orders-group")
 	public void processPayment(String event) throws JsonMappingException, JsonProcessingException {
